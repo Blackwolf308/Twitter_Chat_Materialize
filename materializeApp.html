@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+
+  <head>
+      <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+      <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+      <style>
+          #messagesDiv {
+              height: 75vh;
+              overflow: auto;
+          }
+          .nav {
+            padding: 0 10% 0 10%;
+          }
+          .chat-window {
+            margin: 2%;
+            padding: 0 10% 0 10%;
+          }
+          article{
+            padding: 1%;
+          }
+          .media-content{
+            margin-top: 1%;
+          }
+          figure{
+            margin-top: 1%;
+          }
+          .navbar-header {
+            margin-top: 20px;
+            color: white;
+          }
+          .nav-wrapper {
+            margin: auto;
+          }
+          .fa {
+            color: #0ce3ac;
+            margin-right: 30px;
+          }
+          img {
+            padding-top: 12px;
+            border-radius: 50%;
+          }
+          .card-panel {
+            height: 100px;
+            margin:auto;
+          }
+      </style>
+  </head>
+  <!-- <span class="icon">
+    <i class="fa fa-twitter"></i> &nbsp;
+  </span> Twitter Chat
+
+  <span class="icon">
+    <i class="fa fa-sign-out"></i>
+  </span>
+
+<a class="button" id="logout" href="index.html"></a>
+-->
+  <body>
+    <nav class='nav'>
+      <div class="nav-wrapper">
+        <span>
+          <a href="https://twitter.com/" class='brand-logo'><i class="fa fa-twitter"> </i>Twitter Chat</a> &nbsp;
+        </span>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="index.html">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="chat-window">
+      <div id="messagesDiv"></div>
+      <div class="row">
+        <input type="text" class="input" id="messageInput" placeholder="Type You're Message Here">
+        <button id="sendButton" class="btn waves-effect waves-light" type="submit" name="action">Submit
+          <i class="material-icons right">send</i>
+        </button>
+      </div>
+    <script type="text/javascript">
+    const ref = new Firebase('https://chat-app308.firebaseio.com/')
+
+
+
+    if (!localStorage.getItem('auth')) {
+      window.location.replace("index.html")
+    }
+
+    $('#logout').click(function() {
+      localStorage.clear()
+    })
+
+// this line make the "welcome (addnamehere)" part in the center of the navbar
+    const { displayName, profileImageURL, username } = JSON.parse(localStorage.getItem('auth'))
+    $("#username").text("Welcome " + displayName)
+
+    //RECEIVE INPUT
+    $('#messageInput').keypress(function(e) {
+        if (e.keyCode == 13 ) sendMsg()
+    });
+
+    $('#sendButton').click(sendMsg)
+
+    function sendMsg() {
+
+      const message = $('#messageInput').val();
+      ref.push({ message, displayName, profileImageURL, username });
+      $('#messageInput').val(" ");
+    }
+
+    // Get data from FB(firebase)
+    ref.on('child_added', function(snapshot) {
+      const {message, displayName, profileImageURL, username} = snapshot.val()
+      const encodedMessage = encodeURIComponent(message)
+      const url = `https://twitter.com/intent/tweet?text=${encodedMessage}`
+      displayChatMessage(message, profileImageURL, displayName, username, url);
+    })
+    function displayChatMessage(message, img, displayName, username, url) {
+      const date = new Date()
+      const minutes = date.getMinutes()
+      const hours = date.getHours()
+      //<img width='54px' src=${img}/>
+      $('<div class="row"/>').html(
+          `<div class="col s12 m12 l12">
+
+            <div class="card-panel col m12">
+
+                <div class="col m2">
+                  <img width='54px' src=${img}/>
+                </div>
+
+                <div class="col m10">
+                    <p>
+                      <strong>${displayName}</strong> <small>@${username}</small> <small>${(hours+ 24) % 12 || 12}:${minutes}</small>
+                      <br>
+                      ${message}
+                    </p>
+
+                    <a class="level-item" href=${url}>
+                      <span class="icon is-small"><i class="fa fa-retweet"></i></span>
+                    </a>
+                </div>
+
+            </div>
+          </div>`
+        ).appendTo($('#messagesDiv'))
+    $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+    }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+  </body>
+  <!-- <div class="content">
+    <p>
+      <strong>${displayName}</strong> <small>@${username}</small> <small>${(hours+ 24) % 12 || 12}:${minutes}</small>
+      <br>
+      ${message}
+    </p>
+  </div>
+  <nav class="level">
+    <div class="level-left">
+      <a class="level-item" href=${url}>
+        <span class="icon is-small"><i class="fa fa-retweet"></i></span>
+      </a>
+    </div>
+  </nav>
+  </div>
+  </article>` -->
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "firebase_new",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "reload": "~0.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "reload -b",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause"
+}

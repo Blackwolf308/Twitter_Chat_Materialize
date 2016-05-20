@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="https://cdn0.iconfinder.com/data/icons/kameleon-free-pack-rounded/110/Chat-2-128.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+    <title>Twitter Chat</title>
+    <style>
+      .login{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      #errorMsg{
+        margin: 1%;
+      }
+      .authButton{
+        margin: 1%;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class=' login'>
+
+      <h1 class='subtitle is-2'>Tweet Chat</h1>
+
+        <a class="authButton waves-effect waves-light btn-large" id="twitter">
+          <span class="icon"><i class="fa fa-twitter"></i></span>
+          Twitter
+        </a>
+
+        <a class="authButton waves-effect waves-light btn-large blue" id="facebook">
+          <span class="icon"><i class="fa fa-facebook"></i></span>
+          Facebook
+        </a>
+
+        <a class="authButton waves-effect waves-light btn-large red" id="google">
+          <span class="icon"><i class="fa fa-google"></i></span>
+          Google
+        </a>
+
+        <div id="modal1" class="modal">
+          <div class="modal-content">
+            <h4>No Go MoFo</h4>
+          </div>
+          <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+          </div>
+        </div>
+
+    </div>
+  </body>
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+    <script type="text/javascript" >
+        const ref = new Firebase('https://chat-app308.firebaseio.com/')
+
+        $('#errorMsg').hide()
+
+        $('.authButton').click(function() {
+          const site = this.id
+          ref.authWithOAuthPopup(site, function(error, authData) {
+            if (error) handelsError()
+            else handelsSuccess(authData, site)
+          })
+        })
+
+        function handelsError() {
+          $('#modal1').openModal();
+        }
+
+        function handelsSuccess(authData, site) {
+          // "let" allows the object to be "mutated" or changed.
+          let { displayName, profileImageURL, username } = authData[site]
+          // username ? username : username='' is the same thing as an "if", "else" statement. called ternary function
+          username ? username : username=''
+          // now, since the object is picked, it can be a constant
+          const auth = { displayName, profileImageURL, username }
+          localStorage.setItem("auth", JSON.stringify(auth))
+          window.location.replace("materializeApp.html");
+        }
+
+    </script>
+  </html>
